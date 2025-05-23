@@ -64,6 +64,7 @@ Ajout d’un champ :
 1. **Cloner le projet**
    
 git clone -b etpae_4 https://github.com/LoricWorms/testVigicorp.git
+
 cd testVigipro
 
 2. **Installer les dépendances**
