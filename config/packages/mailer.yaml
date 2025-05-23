@@ -1,3 +1,8 @@
 framework:
     mailer:
         dsn: '%env(MAILER_DSN)%'
+    messenger:
+        transports:
+            async: doctrine://default
+        routing:
+            'Symfony\Component\Mailer\Messenger\SendEmailMessage': async
