@@ -57,7 +57,7 @@ Ajout d’un champ :
 - PHP ≥ 8.1
 - Composer
 - Symfony CLI (optionnel mais recommandé)
-- Base de données MySQL ou compatible
+- Base de données MySQL ou compatible (WAMP, XAMP, ...)
 
 ### Étapes
 
@@ -77,3 +77,17 @@ php bin/console make:migration
 php bin/console doctrine:migrations:migrate
 
 4. **Lancer le serveur de développement**
+
+symfony server:start (gardez votre terminal d'ouvert)
+
+## 📁  Utilisation
+
+1. Connectez ou créez un compte Mailtrap
+   
+2. Récupérez le paramètres SMTP de la boîte mail et remplacez la ligne 40. **MAILER_DSN="smtp://9b6f1ff8be293a:79e90ffa31d8a5@sandbox.smtp.mailtrap.io:2525"** dans le fichier .env
+
+3. Dans le terminal : php bin/console messenger:consume async
+
+4. Remplissez les champs du formulaire puis cliquez sur **envoyer**
+
+5. Vérifiez la bonne récéption du mail, l'enregistrement des données dans la base de données et la présence du fichier dans le dossier  ( `/public/uploads`)
