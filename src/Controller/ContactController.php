@@ -11,11 +11,14 @@ use App\Form\ContactForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 final class ContactController extends AbstractController
 {
     #[Route('/contact', name: 'app_contact')]
-    public function index(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, SluggerInterface $slugger, ParameterBagInterface $params): Response
     {
         $contact = new Contact();
         $form = $this->createForm(ContactForm::class, $contact);
@@ -23,6 +26,24 @@ final class ContactController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Gestion du fichier uploadé
+            $uploadedFile = $form->get('fichier')->getData();
+            if ($uploadedFile) {
+                $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
+                try {
+                    $uploadedFile->move(
+                        $params->get('uploads_directory'),
+                        $newFilename
+                    );
+                    // Enregistre le nom dans l’entité Contact
+                    $contact->setFichier($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload du fichier.');
+                }
+            }
 
             // Enregistrement en base de données
             $entityManager->persist($contact);
@@ -43,6 +64,11 @@ final class ContactController extends AbstractController
                         $contact->getEmail()
                     )
                 );
+
+            // Ajouter le fichier en pièce jointe si présent
+            if (isset($newFilename)) {
+                $email->attachFromPath($params->get('uploads_directory') . '/' . $newFilename);
+            }
 
             try {
                 $mailer->send($email);

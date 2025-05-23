@@ -22,6 +22,9 @@ class Contact
     #[ORM\Column(length: 100)]
     private ?string $email = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $fichier = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +62,18 @@ class Contact
     public function setEmail(string $email): static
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getFichier(): ?string
+    {
+        return $this->fichier;
+    }
+
+    public function setFichier(?string $fichier): static
+    {
+        $this->fichier = $fichier;
 
         return $this;
     }
