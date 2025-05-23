@@ -17,6 +17,12 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 final class ContactController extends AbstractController
 {
+    #[Route('/', name: 'app_accueil')]
+    public function accueil()
+    {
+        return $this->redirectToRoute('app_contact');
+    }
+
     #[Route('/contact', name: 'app_contact')]
     public function index(Request $request, EntityManagerInterface $entityManager, MailerInterface $mailer, SluggerInterface $slugger, ParameterBagInterface $params): Response
     {
